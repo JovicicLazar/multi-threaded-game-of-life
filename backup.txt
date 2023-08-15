@@ -1,0 +1,107 @@
+#include <raylib.h>
+#include <iostream>
+#include <random>
+
+using namespace std;
+
+int get_random_stats() {
+    return rand() % 2;
+}
+
+void cleanup_array(Rectangle* &array, int &size) {
+    delete[] array;
+    array = nullptr;
+    size = 0;
+}
+
+void expand_array(Rectangle* &array, int &old_array_size) {
+    int new_array_size = old_array_size + 1;
+    Rectangle* temporary_array = new Rectangle[new_array_size];
+    for(int i = 0; i < old_array_size; i++) {
+        temporary_array[i] = array[i];
+    }
+    delete[] array;
+    array = temporary_array;
+    old_array_size++;
+}
+
+int** generate_matrix(int rows, int cols) {
+    int** matrix = new int*[rows];
+    for(int i = 0; i < rows; ++i) {
+        matrix[i] = new int[cols];
+        for (int j = 0; j < cols; ++j) {
+            matrix[i][j] = get_random_stats();
+        }
+    }
+    return matrix;
+}
+
+void cleanup_matrix(int** matrix, int rows) {
+    for (int i = 0; i < rows; ++i) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
+}
+
+void draw_matrix(int** matrix, int rows ,int cols) {
+        int posx         = 0;
+        int posy         = 0;
+        Rectangle* cells = nullptr;
+        int cell_count   = 0;
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                if(matrix[i][j] == 1){
+                    expand_array(cells, cell_count);
+                    cells[cell_count - 1].height = 50;
+                    cells[cell_count - 1].width = 50;
+                    cells[cell_count - 1].x = posx;
+                    cells[cell_count - 1].y = posy;
+                }
+                posx += 50;
+                if(posx >= cols * 50) posx = 0;
+                if(j == cols - 1) posy +=50;            
+            }
+        }
+        BeginDrawing();
+            ClearBackground(BLACK);
+            for (int i = 0; i <= cell_count - 1; i++)
+            {
+                DrawRectangleRec(cells[i], RED);
+            }
+        EndDrawing();
+        cleanup_array(cells, cell_count);
+}
+
+int main() {
+    int rows = 9;
+    int cols = 16;
+
+    srand(time(0));
+
+    const int factor        = 50;
+    const int screen_width  = 16 * factor;
+    const int screen_height = 9 * factor;
+
+    InitWindow(screen_width, screen_height, "game of l i f e");
+
+    SetTargetFPS(60);
+
+    int** matrix = generate_matrix(rows, cols);
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    while (!WindowShouldClose())
+    {
+        matrix = generate_matrix(rows, cols);
+        draw_matrix(matrix, rows, cols);
+        cleanup_matrix(matrix, rows);
+    }
+    
+    CloseWindow();
+
+    return 1;
+}
