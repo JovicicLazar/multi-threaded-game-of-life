@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "ostream": "cpp",
+        "iostream": "cpp",
+        "thread": "cpp",
+        "condition_variable": "cpp"
+    }
+}
