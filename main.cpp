@@ -68,10 +68,13 @@ int main(int argc, char* argv[]) {
     // --single-thread
     // --rows 100
     // --cols 100
-    // --
+    // --cell-size
     bool multi_thread = false;
     float cell_size   = 15.0f;
-
+    int col_number    = 10;
+    int row_number    = 10;
+    bool set_preset       = false;
+    string preset     = "./presets/glider.in";
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--multi-thread") == 0) {
@@ -90,14 +93,40 @@ int main(int argc, char* argv[]) {
                 std::cerr << "Out of range cell size: " << argv[i] << std::endl;
                 exit(0);
             }
+        } else if (strcmp(argv[i], "--cols") == 0) {
+            try {
+                i++;
+                float argv_col_number = std::stoi(argv[i]);
+                col_number = argv_col_number;
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid argument for col number: " << argv[i] << std::endl;
+                exit(0);
+            } catch (const std::out_of_range& e) {
+                std::cerr << "Out of range for col number: " << argv[i] << std::endl;
+                exit(0);
+            }
+        } else if (strcmp(argv[i], "--rows") == 0) {
+            try {
+                i++;
+                float argv_row_number = std::stoi(argv[i]);
+                row_number = argv_row_number;
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid argument for row number: " << argv[i] << std::endl;
+                exit(0);
+            } catch (const std::out_of_range& e) {
+                std::cerr << "Out of range for row number: " << argv[i] << std::endl;
+                exit(0);
+            }
+        } else if (strcmp(argv[i], "--preset") == 0) {
+            set_preset = true;
         } else if (strcmp(argv[i], "--help") == 0) {
 
-            cout << "--help           =>   lists all of the commands \n " << endl;
-            cout << "--multi-thread   =>   runs game of life in multi threaded mode " << endl;
-            cout << "--single-thread  =>   runs game of life in single thread mode " << endl;
-            cout << "--cell-size      =>   sets the display size of a alive cell " << endl;
-            cout << "--col-number     =>   sets the number of columns " << endl;
-            cout << "--row-number     =>   sets number of rows " << endl;
+            std::cout << "--help           =>   lists all of the commands \n " << endl;
+            std::cout << "--multi-thread   =>   runs game of life in multi threaded mode " << endl;
+            std::cout << "--single-thread  =>   runs game of life in single thread mode " << endl;
+            std::cout << "--cell-size      =>   sets the display size of a alive cell " << endl;
+            std::cout << "--col-number     =>   sets the number of columns " << endl;
+            std::cout << "--row-number     =>   sets number of rows " << endl;
 
             exit(0);
         }
@@ -108,8 +137,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    return 0;
-    Board board("./presets/glider.in", cell_size);
+    //return 0;
+    Board board(preset , cell_size, row_number, col_number);
+
+    //Board board(row_number, col_number, cell_size);
     
     const int rows          = board.get_board().rows;
     const int cols          = board.get_board().cols;

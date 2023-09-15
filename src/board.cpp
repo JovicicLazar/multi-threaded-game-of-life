@@ -41,9 +41,9 @@ Board::Board(int rows, int cols, float cell_size) {
     this->main_board.cells     = init_board(rows, cols, true);
 }
 
-Board::Board(string preset_path, float cell_size) {
-    int rows = 0;
-    int cols = 0;
+Board::Board(string preset_path, float cell_size, int rows, int cols) {
+    int row_pos = 0;
+    int col_pos = 0;
     char cell;
     vector<pair<int ,int>> cells;
     fstream fin(preset_path, fstream::in);
@@ -53,23 +53,26 @@ Board::Board(string preset_path, float cell_size) {
     if(fin) {
         while (fin >> noskipws >> cell) {
             if(cell == '.' ) {
-                cols++;
+                col_pos++;
             } 
             else if(cell == '\n') { 
-                rows ++; 
-                cols = 0;
+                row_pos ++; 
+                col_pos = 0;
             }
             else if(cell == '#') {
-                cols++;
-                cells.push_back(make_pair(rows, cols));
+                col_pos++;
+                cells.push_back(make_pair(row_pos, col_pos));
             }
         }
 
     } else {
-        cout << "file does not exist" << endl;
+        std::cout << "file does not exist" << endl;
         exit(0);
     }
-    rows += 1;
+
+    row_pos += 1;
+    if(rows < row_pos) rows = row_pos;
+    if(cols < col_pos) cols = col_pos;
     this->main_board.rows = rows;
     this->main_board.cols = cols;
     this->main_board.cells = init_board(rows, cols, false);
