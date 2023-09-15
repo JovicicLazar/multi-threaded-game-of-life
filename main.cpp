@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <vector>
 #include <thread>
+#include <cstring>
 #include <jsoncpp/json/json.h>
 
 #include "./src/board.cpp"
@@ -61,20 +62,65 @@ void draw_matrix(cell** matrix, int rows ,int cols, float cell_size) {
         cleanup_array(cells, cell_count);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
-    Board board("./presets/glider.in", 15.0f);
+    // --multi-thread
+    // --single-thread
+    // --rows 100
+    // --cols 100
+    // --
+    bool multi_thread = false;
+    float cell_size   = 15.0f;
+
+
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--multi-thread") == 0) {
+            multi_thread = true;
+        } else if (strcmp(argv[i], "--single-thread") == 0) {
+            multi_thread = false;
+        } else if (strcmp(argv[i], "--cell-size") == 0) {
+            try {
+                i++;
+                float argv_cell_size = std::stof(argv[i]);
+                cell_size = argv_cell_size;
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid argument for cell size: " << argv[i] << std::endl;
+                exit(0);
+            } catch (const std::out_of_range& e) {
+                std::cerr << "Out of range cell size: " << argv[i] << std::endl;
+                exit(0);
+            }
+        } else if (strcmp(argv[i], "--help") == 0) {
+
+            cout << "--help           =>   lists all of the commands \n " << endl;
+            cout << "--multi-thread   =>   runs game of life in multi threaded mode " << endl;
+            cout << "--single-thread  =>   runs game of life in single thread mode " << endl;
+            cout << "--cell-size      =>   sets the display size of a alive cell " << endl;
+            cout << "--col-number     =>   sets the number of columns " << endl;
+            cout << "--row-number     =>   sets number of rows " << endl;
+
+            exit(0);
+        }
+        
+        else {
+            std::cout << "Wrong argument: " << argv[i] << std::endl;
+            exit(0);
+        }
+    }
+
+    return 0;
+    Board board("./presets/glider.in", cell_size);
     
     const int rows          = board.get_board().rows;
     const int cols          = board.get_board().cols;
     const int factor        = board.get_board().cell_size;
     const int screen_width  = cols * factor;
     const int screen_height = rows * factor;
-    const float cell_size   = board.get_board().cell_size;
+    //const float cell_size   = board.get_board().cell_size;
 
     int fps                 = 10;
 
-    const bool threaded     = false;
+    const bool threaded     = true;
 
     InitWindow(screen_width, screen_height, "g a m e  of  l i f e");
     SetTargetFPS(fps);
@@ -105,7 +151,7 @@ int main() {
         
         if(!IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 
-            if(threaded) {
+            if(multi_thread) {
                 board.generate_board_mthread();
             } else {
                 board.generate_board_sthread();
@@ -121,4 +167,5 @@ int main() {
     CloseWindow();
 
     return 1;
+
 }
