@@ -34,52 +34,52 @@ void Board::cleanup_board() {
     delete[] this->main_board.cells;
 }
 
-Board::Board(int rows, int cols, float cell_size) {
-    this->main_board.rows      = rows;
-    this->main_board.cols      = cols;
-    this->main_board.cell_size = cell_size;
-    this->main_board.cells     = init_board(rows, cols, true);
-}
+Board::Board(bool preset, string preset_path, float cell_size, int rows, int cols) {
+    if(preset){
+        int row_pos = 0;
+        int col_pos = 0;
+        char cell;
+        vector<pair<int ,int>> cells;
+        fstream fin(preset_path, fstream::in);
 
-Board::Board(string preset_path, float cell_size, int rows, int cols) {
-    int row_pos = 0;
-    int col_pos = 0;
-    char cell;
-    vector<pair<int ,int>> cells;
-    fstream fin(preset_path, fstream::in);
+        this->main_board.cell_size = cell_size;
 
-    this->main_board.cell_size = cell_size;
-
-    if(fin) {
-        while (fin >> noskipws >> cell) {
-            if(cell == '.' ) {
-                col_pos++;
-            } 
-            else if(cell == '\n') { 
-                row_pos ++; 
-                col_pos = 0;
+        if(fin) {
+            while (fin >> noskipws >> cell) {
+                if(cell == '.' ) {
+                    col_pos++;
+                } 
+                else if(cell == '\n') { 
+                    row_pos ++; 
+                    col_pos = 0;
+                }
+                else if(cell == '#') {
+                    cells.push_back(make_pair(row_pos, col_pos));
+                    col_pos++;
+                }
             }
-            else if(cell == '#') {
-                col_pos++;
-                cells.push_back(make_pair(row_pos, col_pos));
-            }
+
+        } else {
+            std::cout << "file does not exist: "<< preset_path << endl;
+            exit(0);
         }
 
+        row_pos += 1;
+        if(rows < row_pos) rows = row_pos;
+        if(cols < col_pos) cols = col_pos;
+        this->main_board.rows = rows;
+        this->main_board.cols = cols;
+        this->main_board.cells = init_board(rows, cols, false);
+        
+        for(int i = 0; i < cells.size(); i ++) {
+            this->main_board.cells[cells[i].first][cells[i].second].state = CellState::ALIVE;
+        }
     } else {
-        std::cout << "file does not exist" << endl;
-        exit(0);
-    }
-
-    row_pos += 1;
-    if(rows < row_pos) rows = row_pos;
-    if(cols < col_pos) cols = col_pos;
-    this->main_board.rows = rows;
-    this->main_board.cols = cols;
-    this->main_board.cells = init_board(rows, cols, false);
-    
-    for(int i = 0; i < cells.size(); i ++) {
-        this->main_board.cells[cells[i].first][cells[i].second].state = CellState::ALIVE;
-    }
+        this->main_board.rows      = rows;
+        this->main_board.cols      = cols;
+        this->main_board.cell_size = cell_size;
+        this->main_board.cells     = init_board(rows, cols, true);
+    } 
 }
 
 Board::~Board(){

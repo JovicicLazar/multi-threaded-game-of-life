@@ -21,8 +21,7 @@ condition_variable cv;
 class Board {
     
     public:
-        Board(int rows, int cols, float cell_size);
-        Board(string preset_path, float cell_size, int rows, int cols);
+        Board(bool preset, string preset_path, float cell_size, int rows, int cols);
         ~Board();
 
         void cleanup_board();

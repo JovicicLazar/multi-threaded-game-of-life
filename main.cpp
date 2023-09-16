@@ -38,8 +38,9 @@ void draw_matrix(cell** matrix, int rows ,int cols, float cell_size) {
         int posy         = 0;
         Rectangle* cells = nullptr;
         int cell_count   = 0;
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 if(matrix[i][j].state == CellState::ALIVE) {
                     expand_array(cells, cell_count);
                     cells[cell_count - 1].height = cell_size;
@@ -52,6 +53,7 @@ void draw_matrix(cell** matrix, int rows ,int cols, float cell_size) {
                 if(j == cols - 1) posy +=cell_size;            
             }
         }
+        
         BeginDrawing();
             ClearBackground(BLACK);
             for (int i = 0; i <= cell_count - 1; i++)
@@ -64,11 +66,6 @@ void draw_matrix(cell** matrix, int rows ,int cols, float cell_size) {
 
 int main(int argc, char* argv[]) {
 
-    // --multi-thread
-    // --single-thread
-    // --rows 100
-    // --cols 100
-    // --cell-size
     bool multi_thread = false;
     float cell_size   = 15.0f;
     int col_number    = 10;
@@ -118,7 +115,16 @@ int main(int argc, char* argv[]) {
                 exit(0);
             }
         } else if (strcmp(argv[i], "--preset") == 0) {
-            set_preset = true;
+                i++;
+
+                if(i >= argc) {
+                    std::cerr << "Missing preset name \n" << argv[i] << std::endl;
+                    exit(0);
+                } else {
+                    set_preset = true;
+                    preset = "./presets/" + std::string(argv[i])+".in";
+                }
+
         } else if (strcmp(argv[i], "--help") == 0) {
 
             std::cout << "--help           =>   lists all of the commands \n " << endl;
@@ -127,6 +133,7 @@ int main(int argc, char* argv[]) {
             std::cout << "--cell-size      =>   sets the display size of a alive cell " << endl;
             std::cout << "--col-number     =>   sets the number of columns " << endl;
             std::cout << "--row-number     =>   sets number of rows " << endl;
+            std::cout << "--row-number     =>   sets the rpeset that will be run " << endl;
 
             exit(0);
         }
@@ -137,28 +144,19 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    //return 0;
-    Board board(preset , cell_size, row_number, col_number);
-
-    //Board board(row_number, col_number, cell_size);
-    
-    const int rows          = board.get_board().rows;
-    const int cols          = board.get_board().cols;
-    const int factor        = board.get_board().cell_size;
-    const int screen_width  = cols * factor;
-    const int screen_height = rows * factor;
-    //const float cell_size   = board.get_board().cell_size;
-
-    int fps                 = 10;
-
+    Board board(set_preset, preset , cell_size, row_number, col_number);
+    int cols = board.get_board().cols;
+    int rows = board.get_board().rows;
+    const int screen_width  = cols * cell_size;
+    const int screen_height = rows * cell_size;
+    int fps                 = 30;
     const bool threaded     = true;
 
     InitWindow(screen_width, screen_height, "g a m e  of  l i f e");
     SetTargetFPS(fps);
-    
+
     while (!WindowShouldClose())
     {
-
         if(IsKeyDown(KEY_DOWN) && fps > 2){
             fps--;
             SetTargetFPS(fps);
@@ -192,7 +190,6 @@ int main(int argc, char* argv[]) {
 
         DrawText(to_string(GetFPS()).c_str(), 0, 0, (int)screen_height / 25, WHITE);
         draw_matrix(board.get_board().cells, rows, cols, cell_size);
-
     }
 
     CloseWindow();
