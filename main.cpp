@@ -58,21 +58,13 @@ void draw_matrix(cell** matrix, int rows ,int cols, float cell_size) {
             ClearBackground(BLACK);
             for (int i = 0; i <= cell_count - 1; i++)
             {
-                DrawRectangleRec(cells[i], RED);
+                DrawRectangleRec(cells[i], SKYBLUE);
             }
         EndDrawing();
         cleanup_array(cells, cell_count);
 }
 
-int main(int argc, char* argv[]) {
-
-    bool multi_thread = false;
-    float cell_size   = 15.0f;
-    int col_number    = 10;
-    int row_number    = 10;
-    bool set_preset       = false;
-    string preset     = "./presets/glider.in";
-
+void handle_argv(int argc, char* argv[], bool multi_thread, float &cell_size, int &col_number, int &row_number, bool &set_preset, string &preset){
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--multi-thread") == 0) {
             multi_thread = true;
@@ -143,6 +135,18 @@ int main(int argc, char* argv[]) {
             exit(0);
         }
     }
+}
+
+int main(int argc, char* argv[]) {
+
+    bool multi_thread = false;
+    float cell_size   = 15.0f;
+    int col_number    = 10;
+    int row_number    = 10;
+    bool set_preset       = false;
+    string preset     = "./presets/glider.in";
+
+    handle_argv(argc, argv, multi_thread, cell_size, col_number, row_number, set_preset, preset);
 
     Board board(set_preset, preset , cell_size, row_number, col_number);
     int cols = board.get_board().cols;

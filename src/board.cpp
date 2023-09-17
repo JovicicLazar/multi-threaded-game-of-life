@@ -1,5 +1,7 @@
 #include "../headers/board.hpp"
 
+
+// non class methods
 cell** init_board(int rows, int cols, bool random) {
     cell** cells = new cell*[rows];
 
@@ -27,13 +29,12 @@ bool is_valid_cell(int row, int col, int rows, int cols) {
     return row >= 0 && row < rows && col >= 0 && col < cols;
 }
 
-void Board::cleanup_board() {
-    for (int i = 0; i < main_board.rows; ++i) {
-        delete[] this->main_board.cells[i];
-    }
-    delete[] this->main_board.cells;
+void clamp(int *n, int high_val) {
+    if(*n > high_val - 1) *n = 0;
+    if(*n < 0) *n = high_val - 1;
 }
 
+// class methods
 Board::Board(bool preset, string preset_path, float cell_size, int rows, int cols) {
     if(preset){
         int row_pos = 0;
@@ -90,9 +91,11 @@ board Board::get_board() {
     return this->main_board;
 }
 
-void clamp(int *n, int high_val) {
-    if(*n > high_val - 1) *n = 0;
-    if(*n < 0) *n = high_val - 1;
+void Board::cleanup_board() {
+    for (int i = 0; i < main_board.rows; ++i) {
+        delete[] this->main_board.cells[i];
+    }
+    delete[] this->main_board.cells;
 }
 
 void Board::calculate_cell_state_mthread(int row, int col) {
