@@ -11,6 +11,11 @@
 
 using namespace std;
 
+
+/**
+ * i did this part of the code the "old fashioned" way
+ * because i wanted to play with memory instead of using vectors
+*/
 void cleanup_array(Rectangle* &array, int &size) {
     delete[] array;
     array = nullptr;
