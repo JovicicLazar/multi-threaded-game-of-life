@@ -5,7 +5,6 @@
 #include <vector>
 #include <thread>
 #include <cstring>
-#include <jsoncpp/json/json.h>
 
 #include "./src/board.cpp"
 
