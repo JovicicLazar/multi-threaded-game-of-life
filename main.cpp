@@ -11,7 +11,6 @@
 
 using namespace std;
 
-
 /**
  * i did this part of the code the "old fashioned" way
  * because i wanted to play with memory instead of using vectors
@@ -128,9 +127,9 @@ void handle_argv(int argc, char* argv[], bool multi_thread, float &cell_size, in
             std::cout << "--multi-thread   =>   runs game of life in multi threaded mode " << endl;
             std::cout << "--single-thread  =>   runs game of life in single thread mode " << endl;
             std::cout << "--cell-size      =>   sets the display size of a alive cell " << endl;
-            std::cout << "--col-number     =>   sets the number of columns " << endl;
-            std::cout << "--row-number     =>   sets number of rows " << endl;
-            std::cout << "--row-number     =>   sets the rpeset that will be run " << endl;
+            std::cout << "--cols           =>   sets the number of columns " << endl;
+            std::cout << "--rows           =>   sets number of rows " << endl;
+            std::cout << "--preset         =>   sets the rpeset that will be run " << endl;
 
             exit(0);
         }
